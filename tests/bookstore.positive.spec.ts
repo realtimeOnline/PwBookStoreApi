@@ -15,18 +15,25 @@ test.describe('BookStore API - Positive Tests', () => {
     apiContext = await playwrightRequest.newContext();
     bookStoreApi = new BookStoreAPI(apiContext);
     try {
-      // Create user and get token
+      // Create user
       const createUserResponse = await bookStoreApi.createUser(testUser);
       expect(createUserResponse.ok()).toBeTruthy();
       const userResult = await createUserResponse.json();
       userId = userResult.userID;
+    } catch (err) {
+      await apiContext.dispose();
+      throw err;
+    }
+  });
 
+  //generate token before each test
+  test.beforeEach(async () => {
+    try {
       const tokenResponse = await bookStoreApi.generateToken(testUser);
       expect(tokenResponse.ok()).toBeTruthy();
       const tokenResult = await tokenResponse.json();
       token = tokenResult.token;
     } catch (err) {
-      await apiContext.dispose();
       throw err;
     }
   });
@@ -49,7 +56,7 @@ test.describe('BookStore API - Positive Tests', () => {
     const allBooksResponse = await bookStoreApi.getAllBooks();
     const books = await allBooksResponse.json();
     const testBook = books.books[0];
-    
+
     const response = await bookStoreApi.getBook(testBook.isbn);
     expect(response.ok()).toBeTruthy();
     const book = await response.json();
@@ -61,7 +68,7 @@ test.describe('BookStore API - Positive Tests', () => {
     const allBooksResponse = await bookStoreApi.getAllBooks();
     const books = await allBooksResponse.json();
     const testBook = books.books[0];
-    
+
     const response = await bookStoreApi.addBook(userId, testBook.isbn, token);
     expect(response.ok()).toBeTruthy();
   });
@@ -72,10 +79,10 @@ test.describe('BookStore API - Positive Tests', () => {
     const books = await allBooksResponse.json();
     const oldBook = books.books[0];
     const newBook = books.books[1];
-    
+
     // First add a book
     await bookStoreApi.addBook(userId, oldBook.isbn, token);
-    
+
     // Then update it
     const response = await bookStoreApi.updateBook(userId, oldBook.isbn, newBook.isbn, token);
     expect(response.ok()).toBeTruthy();
@@ -86,10 +93,10 @@ test.describe('BookStore API - Positive Tests', () => {
     const allBooksResponse = await bookStoreApi.getAllBooks();
     const books = await allBooksResponse.json();
     const testBook = books.books[0];
-    
+
     // First add a book
     await bookStoreApi.addBook(userId, testBook.isbn, token);
-    
+
     // Then delete it
     const response = await bookStoreApi.deleteBook(userId, testBook.isbn, token);
     expect(response.ok()).toBeTruthy();

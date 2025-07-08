@@ -20,13 +20,20 @@ test.describe('BookStore API - Negative Tests', () => {
       expect(createUserResponse.ok()).toBeTruthy();
       const userResult = await createUserResponse.json();
       userId = userResult.userID;
+    } catch (err) {
+      await apiContext.dispose();
+      throw err;
+    }
+  });
 
+    //generate token before each test
+  test.beforeEach(async () => {
+    try {
       const tokenResponse = await bookStoreApi.generateToken(testUser);
       expect(tokenResponse.ok()).toBeTruthy();
       const tokenResult = await tokenResponse.json();
       token = tokenResult.token;
     } catch (err) {
-      await apiContext.dispose();
       throw err;
     }
   });
