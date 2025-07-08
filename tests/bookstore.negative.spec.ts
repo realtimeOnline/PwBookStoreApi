@@ -1,7 +1,7 @@
 import { test, expect, request as playwrightRequest, APIRequestContext } from '@playwright/test';
 import { BookStoreAPI } from '../pages/bookstore.api';
 
-test.describe('BookStore API - Negative Tests', () => {
+test.describe.serial('BookStore API - Negative Tests', () => {
   let bookStoreApi: BookStoreAPI;
   let token: string;
   let userId: string;
