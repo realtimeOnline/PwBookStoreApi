@@ -5,29 +5,40 @@ pipeline {
         nodejs 'Node.js 18.x'
     }
 
+    environment {
+        GIT_REPO = 'https://github.com/realtimeOnline/PwBookStoreApi.git'
+        GIT_CREDS = credentials('git-credentials')
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git(
+                    url: env.GIT_REPO,
+                    branch: 'main',
+                    credentialsId: 'git-credentials'
+                )
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
-                sh 'npx playwright install --with-deps'
+                powershell '''
+                    npm install
+                    npx playwright install --with-deps
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm run test'
+                powershell 'npm run test'
             }
         }
 
         stage('Generate Allure Report') {
             steps {
-                sh 'npm run report'
+                powershell 'npm run report'
             }
         }
     }
@@ -41,6 +52,12 @@ pipeline {
                 reportBuildPolicy: 'ALWAYS',
                 results: [[path: 'allure-results']]
             ])
+        }
+        success {
+            echo 'Tests completed successfully!'
+        }
+        failure {
+            echo 'Tests failed! Check the logs for details.'
         }
     }
 }
