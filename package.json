@@ -1,0 +1,27 @@
+{
+  "name": "pw-bookstore-api",
+  "version": "1.0.0",
+  "description": "API Testing Framework for BookStore using Playwright",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "report": "allure generate ./allure-results --clean && allure open ./allure-report",
+    "clean": "rimraf allure-results allure-report playwright-report"
+  },
+  "keywords": [
+    "playwright",
+    "api-testing",
+    "typescript",
+    "allure-report"
+  ],
+  "dependencies": {
+    "@playwright/test": "^1.40.0",
+    "allure-playwright": "^2.9.2",
+    "dotenv": "^16.3.1",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.2",
+    "rimraf": "^5.0.1"
+  }
+}
